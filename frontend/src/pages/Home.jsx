@@ -1,15 +1,23 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearAuthSession, getAuthUser } from "../utils/authStorage";
 
 
 function Home(){
     const navigate = useNavigate();
+    const user = getAuthUser();
+    const isLoggedIn = Boolean(user);
 
     const playClickSound = () => {
     const click = new Audio("/sounds/click.mp3");
      click.volume = 0.6;
      click.play();
+    };
+
+    const handleLogout = () => {
+      playClickSound();
+      clearAuthSession();
+      navigate("/login");
     };
 
 
@@ -44,6 +52,12 @@ function Home(){
                   A competitive coding battlefield where developers
                   fight problems, climb ranks, and sharpen skills.
                 </p>
+
+                {isLoggedIn && (
+                  <p className="text-emerald-300 text-sm">
+                    Logged in as {user.email}
+                  </p>
+                )}
                  
 
                  {/*Buttons starting*/}
@@ -51,17 +65,22 @@ function Home(){
                  <button
                      onClick={() => {
                       playClickSound();
-                      navigate("/register");
+                      navigate(isLoggedIn ? "/" : "/register");
                     }}
                    className="px-8 py-3 bg-red-600 text-black font-bold tracking-widest
                    hover:bg-red-700 transition"
                   >
-                     START GAME
+                     {isLoggedIn ? "PLAY NOW" : "START GAME"}
                 </button>
 
 
                  <button
                    onClick={() => {
+                    if (isLoggedIn) {
+                      handleLogout();
+                      return;
+                    }
+
                     playClickSound();
                     navigate("/login");
                     }}
@@ -69,7 +88,7 @@ function Home(){
                    className="px-8 py-3 border border-red-600 text-red-500 font-bold tracking-widest
                    hover:bg-red-600 hover:text-black transition"
                  >
-                      LOGIN
+                      {isLoggedIn ? "LOGOUT" : "LOGIN"}
                  </button>
              </div>  {/*Buttons ending*/}
 

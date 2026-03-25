@@ -1,11 +1,33 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRequest } from "../utils/api";
+import { setAuthSession } from "../utils/authStorage";
 
 function Login(){
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleSubmit = (e) =>{
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSubmit = async (e) =>{
         e.preventDefault();
-        console.log("LOGIN: ",email +" "+ password)
+        setError("");
+
+        try {
+            setLoading(true);
+            const result = await apiRequest("/api/auth/login", {
+                method: "POST",
+                body: JSON.stringify({ email, password }),
+            });
+
+            setAuthSession(result.token, result.user);
+            navigate("/");
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
     return (
         <>
@@ -46,8 +68,14 @@ function Login(){
                    type="submit"
                    className="w-full mt-4 py-2 bg-emerald-500 text-slate-900 rounded font-semibold"
                    >
-                    Login
+                    {loading ? "Logging in..." : "Login"}
                    </button>
+
+                   {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+
+                   <p className="mt-4 text-sm text-slate-400 text-center">
+                    No account? <Link to="/register" className="text-emerald-400">Register</Link>
+                   </p>
                 </form>
             </div>
         </div>
