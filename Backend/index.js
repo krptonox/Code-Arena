@@ -4,7 +4,7 @@ require('dotenv').config() //dotenv is a zero-dependency module that loads envir
 
 const express = require('express')
 const app = express()  //app has all functionality of express
-const port = process.env.PORT || 5000 //port number on which our server will run
+const port = process.env.PORT  //port number on which our server will run
 
 app.get('/', (req, res) => {  //app.get() is used to handle GET requests to the specified route ('/'). It takes a callback function with two parameters: req (the request object) and res (the response object). In this case, when a GET request is made to the root route ('/'), the server responds with 'Code Arena'.
     res.send('Code Arena')
