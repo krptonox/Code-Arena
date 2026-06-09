@@ -1,49 +1,23 @@
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useBackgroundMusic } from "./hooks/useBackgroundMusic";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
-import { apiRequest } from "./utils/api";
-import { clearAuthSession, getAuthToken, setAuthSession } from "./utils/authStorage";
+import { useState } from 'react'
+import './App.css'
+import {Routes, Route, Navigate} from 'react-router-dom'
+import Home from './Pages/Home'
+import Login from './Pages/Login'
+import Signup from './Pages/Signup'
+import Jokes from './Pages/Jokes'
 
 function App() {
-  useBackgroundMusic();
-  const [authReady, setAuthReady] = useState(false);
-
-  useEffect(() => {
-    const validateSession = async () => {
-      const token = getAuthToken();
-
-      if (!token) {
-        setAuthReady(true);
-        return;
-      }
-
-      try {
-        const result = await apiRequest("/api/auth/me", { method: "GET" });
-        setAuthSession(token, result.user);
-      } catch {
-        clearAuthSession();
-      } finally {
-        setAuthReady(true);
-      }
-    };
-
-    validateSession();
-  }, []);
-
-  if (!authReady) {
-    return null;
-  }
+  const [count, setCount] = useState(0)
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-    </Routes>
-  );
+    // <Routes>
+    //   <Route path="/" element={<Home />}></Route>
+    // </Routes>
+    <>
+     <Home></Home>
+     <Jokes></Jokes>
+    </>
+  )
 }
 
-export default App;
+export default App

@@ -54,14 +54,14 @@ Code-Arena/
 
 ## Local Setup
 
-1) Clone
+1. Clone
 
 ```bash
 git clone https://github.com/krptonox/Code-Sphere.git
 cd Code-Arena
 ```
 
-2) Backend setup
+2. Backend setup
 
 ```bash
 cd Backend
@@ -80,7 +80,7 @@ Run backend:
 npm run dev
 ```
 
-3) Frontend setup
+3. Frontend setup
 
 ```bash
 cd Frontend
