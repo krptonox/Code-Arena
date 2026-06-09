@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+
 const app = express();
 
 
@@ -12,6 +13,12 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
+
+
+import healthcheckRoute from './routes/healthcheck.route.js'
+app.use('/api/v1/healthcheck', healthcheckRoute)
+
+
 
 app.get("/", (req, res) =>{
       res.send("Welcome to Home API");
