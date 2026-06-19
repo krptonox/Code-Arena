@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 import { Schema } from 'mongoose';
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+
+
 
 const userSchema = new Schema(
   {
@@ -61,4 +66,16 @@ const userSchema = new Schema(
   },
 );
 
+
+//password hashing
+userSchema.pre('save', async function(next){
+  if(!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password,10)
+  next();
+})
+
+
+
 export const User = mongoose.model('User', userSchema);
+
+
