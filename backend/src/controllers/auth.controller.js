@@ -18,6 +18,7 @@ const signUpUser = asyncHandler(async (req, res) => {
     email,
     username,
     password,
+    role,
     isEmailVerified: false,
   });
 
