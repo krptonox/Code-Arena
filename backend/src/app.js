@@ -19,7 +19,7 @@ import healthcheckRoute from './routes/healthcheck.route.js';
 app.use('/api/v1/healthcheck', healthcheckRoute);
 
 //signup user route
-import authRouter from './Routes/auth.route.js';
+import authRouter from './routes/auth.route.js';
 app.use('/api/v1/auth', authRouter);
 
 app.get('/', (req, res) => {
