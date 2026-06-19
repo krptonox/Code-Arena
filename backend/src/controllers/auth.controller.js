@@ -10,7 +10,7 @@ const signUpUser = asyncHandler(async (req, res) => {
     $or: [{ username }, { email }],
   });
 
-  if (!existUser) {
+  if (existUser) {
     throw new ApiError(409, 'User already exists');
   }
 
@@ -18,7 +18,7 @@ const signUpUser = asyncHandler(async (req, res) => {
     email,
     username,
     password,
-    isEmailVerified,
+    isEmailVerified: false,
   });
 
   return res.json(new ApiResponse(201, user, 'User is Registerd Successfully'));
