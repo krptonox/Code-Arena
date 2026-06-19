@@ -19,6 +19,9 @@ import healthcheckRoute from './routes/healthcheck.route.js'
 app.use('/api/v1/healthcheck', healthcheckRoute)
 
 
+//signup user route
+import authRouter from './Routes/auth.route.js'
+app.use('/api/v1/auth',authRouter);
 
 app.get("/", (req, res) =>{
       res.send("Welcome to Home API");

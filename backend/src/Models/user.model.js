@@ -33,6 +33,11 @@ const userSchema = new Schema(
             index:true
         },
 
+        role:{
+            type:String,
+            trim:true
+        },
+
         fullName:{
             type:String,
             trim:true,
