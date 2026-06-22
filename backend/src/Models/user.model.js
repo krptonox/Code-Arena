@@ -5,7 +5,6 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
 
-
 const userSchema = new Schema(
   {
     avatar: {
@@ -67,13 +66,15 @@ const userSchema = new Schema(
 );
 
 
-//password hashing
+//password hashing before saving the user to database
 userSchema.pre('save', async function(next){
   if(!this.isModified('password')) return next;
   
   this.password = await bcrypt.hash(this.password,10)
   next;
 })
+
+
 
 
 
