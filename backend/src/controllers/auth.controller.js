@@ -3,6 +3,7 @@ import { ApiError } from '../Utils/api-error.js';
 import { ApiResponse } from '../Utils/api-response.js';
 import { asyncHandler } from '../Utils/async-handler.js';
 import { z } from 'zod';
+import { sendMail, emailVerificationTemplate } from '../Utils/mail.js';
 
 //To check if the user data is valid or not
 const userValidation = z.object({
@@ -39,7 +40,21 @@ const signUpUser = asyncHandler(async (req, res) => {
     isEmailVerified:false,
   });
 
-  return res.json(new ApiResponse(201, user, 'User is Registerd Successfully'));
+
+  try {
+    await sendMail(
+      user.email,
+      "Please verify your email",
+      "Please verify your email",
+      emailVerificationTemplate(user.username, `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${user._id}`)
+    )
+  }catch(error){
+     console.error("MAIL ERROR:", error);
+     throw new ApiError(500, 'Failed to send verification email')
+  }
+  
+  return res.status(200).json(new ApiResponse(200, user, 'User created successfully and verification email sent'))
 });
+
 
 export { signUpUser };

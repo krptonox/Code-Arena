@@ -59,6 +59,9 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+
+    emailOtp: String,
+    emailOtpExpires: Date,
   },
   {
     timestamps: true,
