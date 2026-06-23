@@ -45,7 +45,6 @@ const signUpUser = asyncHandler(async (req, res) => {
     await sendMail(
       user.email,
       "Please verify your email",
-      "Please verify your email",
       emailVerificationTemplate(user.username, `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${user._id}`)
     )
   }catch(error){
