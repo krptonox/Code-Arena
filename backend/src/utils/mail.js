@@ -37,7 +37,7 @@ const mail = {
   
 try {
     console.log("Sending email to:", Email);
-    await transporter.sendMail(mail);
+    const info = await transporter.sendMail(mail);
     console.log("Email sent:", info.messageId);
 } catch (error) {
     throw new Error(`Failed to send email: ${error.message}`);
@@ -51,7 +51,7 @@ const emailVerificationTemplate = (username, verificationurl) => {
    return {
          body:{
                 name: username,
-                intro: 'Welcome to Dekan! We\'re very excited to have you on board.',
+                intro: 'Welcome to Code-Arena! We\'re very excited to have you on board.',
                 action:{
                     instruction:'To verify your email, please click the button below:',
                     button:{

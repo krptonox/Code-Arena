@@ -58,14 +58,21 @@ const signUpUser = asyncHandler(async (req, res) => {
     await sendMail(
       user.email,
       "Please verify your email",
+      "Hola Amigo! Please verify your email by clicking the button below.",
       emailVerificationTemplate(user.username, verificationUrl)
     )
-  }catch(error){
-     console.error("MAIL ERROR:", error);
-     throw new ApiError(500, 'Failed to send verification email')
+  }catch (error) {
+    console.error("FULL ERROR:");
+    console.error(error);
+}
+
+  const createdUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationTokenExpiry -forgotPasswordToken -forgotPasswordTokenExpiry")
+
+  if(!createdUser){
+    throw new ApiError(500, "Error creating user");
   }
   
-  return res.status(200).json(new ApiResponse(200, user, 'User created successfully and verification email sent'))
+  return res.status(200).json(new ApiResponse(200, [user, createdUser], 'User created successfully and verification email sent'))
 });
 
 
