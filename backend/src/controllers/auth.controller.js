@@ -122,4 +122,36 @@ const verifyEmail = asyncHandler(async(req, res) => {
   )
 })
 
-export { signUpUser, verifyEmail };
+
+
+const loginUser = asyncHandler(async(req, res)=>{
+   const {email, password} = req.body;
+   console.log("Login Request Body:", req.body);
+
+   if (!email || !password){
+    throw new ApiError(400, "Email and password are required");
+  }
+
+   const user = await User.findOne({email})
+
+   console.log("User found:", user)
+
+   if(!user){
+    throw new ApiError(404, "Email not found")
+   }
+
+   if(!user.isEmailVerified){
+    throw new ApiError(403, "Please verify your email first.");
+  } 
+
+  const IsPasswordCorrect = await user.isPasswordCorrect(password);
+  if(!IsPasswordCorrect){
+    throw new ApiError(401,"Password or email is Incorrect Bitch!");
+  }
+  
+  return res.status(200)
+  .json(new ApiResponse(200, user, "LoginSuccesfull without Access and Refresh Token Bitch!"))
+
+})
+
+export { signUpUser, verifyEmail, loginUser };

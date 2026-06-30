@@ -85,7 +85,7 @@ userSchema.pre('save', async function(next){
 })
 
 
-
+//to generate token for email verification 
 userSchema.methods.generateTemporaryToken = function(){
   const unHashedToken = crypto.randomBytes(20).toString('hex')
 
@@ -94,6 +94,12 @@ userSchema.methods.generateTemporaryToken = function(){
   const TokenExpires = Date.now() + 10 * 60 * 1000 //10 mins
 
   return { unHashedToken, hashedToken, TokenExpires }
+}
+
+
+//to compare password enter are correct during login again
+userSchema.methods.isPasswordCorrect = async function(password){
+  return await bcrypt.compare(password, this.password);
 }
 
 
