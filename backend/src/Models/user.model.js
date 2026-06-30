@@ -55,13 +55,20 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+     
+    emailVerificationToken: {
+      type: String,
+    },
+
+    emailVerifictionTokenExpires: {
+      type: Date,
+    },
 
     refreshToken: {
       type: String,
     },
 
-    emailOtp: String,
-    emailOtpExpires: Date,
+    
   },
   {
     timestamps: true,
@@ -77,6 +84,17 @@ userSchema.pre('save', async function(next){
   next;
 })
 
+
+
+userSchema.methods.generateTemporaryToken = function(){
+  const unHashedToken = crypto.randomBytes(20).toString('hex')
+
+  const hashedToken = crypto.createHash('sha256').update(unHashedToken).digest('hex')
+
+  const TokenExpires = Date.now() + 10 * 60 * 1000 //10 mins
+
+  return { unHashedToken, hashedToken, TokenExpires }
+}
 
 
 
