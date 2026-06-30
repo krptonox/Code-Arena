@@ -4,7 +4,7 @@ import { ApiResponse } from '../Utils/api-response.js';
 import { asyncHandler } from '../Utils/async-handler.js';
 import { z } from 'zod';
 import { sendMail, emailVerificationTemplate } from '../Utils/mail.js';
-
+import crypto from "crypto";
 
 //To check if the user data is valid or not
 const userValidation = z.object({
@@ -47,7 +47,7 @@ const signUpUser = asyncHandler(async (req, res) => {
   const {unHashedToken, hashedToken, TokenExpires} = user.generateTemporaryToken();
 
   user.emailVerificationToken = hashedToken;
-  user.emailVerifictionTokenExpires = TokenExpires;
+  user.emailVerificationTokenExpires = TokenExpires;
 
   await user.save({validateBeforeSave:false})
   
@@ -76,4 +76,50 @@ const signUpUser = asyncHandler(async (req, res) => {
 });
 
 
-export { signUpUser };
+
+const verifyEmail = asyncHandler(async(req, res) => {
+  const {token} = req.params;
+ 
+  if(!token){
+    throw new ApiError(400, "No Token from Your Email")
+  }
+
+  console.log("Raw Token:", token);
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  
+  console.log("Hashed Token:", hashedToken);
+
+  const user = await User.findOne({
+    emailVerificationToken:hashedToken,
+
+    // emailVerificationTokenExpires:{
+    //   $gt:Date.now()
+    // },
+  })
+
+  console.log("User:", user);
+
+  if(!user){
+    throw new ApiError(404, "Email Not Verified");
+  }
+  
+
+  user.isEmailVerified = true;
+  user.emailVerificationToken = undefined;
+  user.emailVerificationTokenExpires = undefined;
+
+  await user.save({ validateBeforeSave: false });
+
+  console.log("User after verification:", user);
+
+  return res.status(200).json(
+    new ApiResponse(
+    200,
+    null,
+    "Your email has been verified successfully. You can now log in."
+)
+  )
+})
+
+export { signUpUser, verifyEmail };

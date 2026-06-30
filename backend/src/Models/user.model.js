@@ -60,7 +60,7 @@ const userSchema = new Schema(
       type: String,
     },
 
-    emailVerifictionTokenExpires: {
+    emailVerificationTokenExpires: {
       type: Date,
     },
 
