@@ -16,17 +16,20 @@ const userValidation = z.object({
 
 const generateAccessAndRefreshToken = async (userId) =>{
   try {
-    const User = await User.findById(userId);
-    const RefreshToken = User.generateRefreshToken();
-    const AccessToken = User.generateAccessToken();
+    const user = await User.findById(userId);
+    const RefreshToken = user.generateRefreshToken();
+    const AccessToken = user.generateAccessToken();
 
-    User.refreshToken = RefreshToken;
+    console.log(RefreshToken," ",AccessToken)
 
-    await User.save({validateBeforeSave: false})
+    user.refreshToken = RefreshToken;
+
+    await user.save({validateBeforeSave: false})
     return {AccessToken, RefreshToken}
   }
   catch(error){
-     throw new ApiError(500, "Error in generating Access and Refresh Token")
+    console.log(error);
+     throw new ApiError(500,"Error in generating Access and Refresh Token")
   }
 }
 
@@ -165,8 +168,13 @@ const loginUser = asyncHandler(async(req, res)=>{
     throw new ApiError(401,"Password or email is Incorrect Bitch!");
   }
 
-  
+  console.log("No error till here")
+
   const {AccessToken, RefreshToken} = await generateAccessAndRefreshToken(user._id);
+
+  console.log("After generation")
+
+  console.log(AccessToken, RefreshToken)
 
   await user.save({validateBeforeSave: false});
   
