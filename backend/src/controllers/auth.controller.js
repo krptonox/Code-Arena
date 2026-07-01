@@ -14,6 +14,22 @@ const userValidation = z.object({
 
 });
 
+const generateAccessAndRefreshToken = async (userId) =>{
+  try {
+    const User = await User.findById(userId);
+    const RefreshToken = User.generateRefreshToken();
+    const AccessToken = User.generateAccessToken();
+
+    User.refreshToken = RefreshToken;
+
+    await User.save({validateBeforeSave: false})
+    return {AccessToken, RefreshToken}
+  }
+  catch(error){
+     throw new ApiError(500, "Error in generating Access and Refresh Token")
+  }
+}
+
 
 const signUpUser = asyncHandler(async (req, res) => {
   const { email, username, password, role } = req.body;
@@ -148,8 +164,20 @@ const loginUser = asyncHandler(async(req, res)=>{
   if(!IsPasswordCorrect){
     throw new ApiError(401,"Password or email is Incorrect Bitch!");
   }
+
   
+  const {AccessToken, RefreshToken} = await generateAccessAndRefreshToken(user._id);
+
+  await user.save({validateBeforeSave: false});
+  
+  const options = {
+    httpOnly: true,
+    secure: true
+  }
+
   return res.status(200)
+  .cookie("accessToken", AccessToken, options)
+  .cookie("refreshToken", RefreshToken, options)
   .json(new ApiResponse(200, user, "LoginSuccesfull without Access and Refresh Token Bitch!"))
 
 })
