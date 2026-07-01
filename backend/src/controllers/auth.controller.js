@@ -20,7 +20,7 @@ const generateAccessAndRefreshToken = async (userId) =>{
     const RefreshToken = user.generateRefreshToken();
     const AccessToken = user.generateAccessToken();
 
-    console.log(RefreshToken," ",AccessToken)
+    // console.log(RefreshToken," ",AccessToken)
 
     user.refreshToken = RefreshToken;
 
@@ -174,7 +174,7 @@ const loginUser = asyncHandler(async(req, res)=>{
 
   console.log("After generation")
 
-  console.log(AccessToken, RefreshToken)
+  // console.log(AccessToken, RefreshToken)
 
   await user.save({validateBeforeSave: false});
   
