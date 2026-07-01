@@ -190,4 +190,40 @@ const loginUser = asyncHandler(async(req, res)=>{
 
 })
 
-export { signUpUser, verifyEmail, loginUser };
+
+
+const logoutUser = asyncHandler(async(req,res)=>{
+  const {email} = req.body;
+
+  const user = await User.findOne({email})
+
+  if(!user){
+    throw new ApiError(404, "User not found")
+  }
+
+  console.log("User data we got:", user)
+
+ await User.findOneAndUpdate(user._id,{
+    $set:{
+      refreshToken:null
+    },
+  },
+  {
+    new:true
+  }
+);
+
+console.log("User after logout:", user)
+
+const options = {
+    httpOnly: true,
+    secure: true
+  }
+
+  return res.status(200)
+  .clearCookie('refreshToken',options)
+  .clearCookie('accessToken',options)
+  .json(new ApiResponse(200, null, "User logged out successfully"))
+})
+
+export { signUpUser, verifyEmail, loginUser, logoutUser };
