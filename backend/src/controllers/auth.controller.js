@@ -226,4 +226,46 @@ const options = {
   .json(new ApiResponse(200, null, "User logged out successfully"))
 })
 
-export { signUpUser, verifyEmail, loginUser, logoutUser };
+
+const getCurrentUser = asyncHandler(async(req,res)=>{
+  return res.status(200)
+  .json(new ApiResponse(200, req.user,"Current user fetched successfully"))
+})
+
+const resendEmailVerification = asyncHandler(async(req,res)=>{
+   
+  const user = await User.findById(req.user._id);
+  console.log("User data we got:", user)
+
+  if(!user){
+    throw new ApiError(404, "User not found");
+  }
+
+  if(user.isEmailVerified){
+    throw new ApiError(409, "Email is already verified");
+  }
+
+  const {unHashedToken, hashedToken, TokenExpires} = user.generateTemporaryToken();
+
+  user.emailVerificationToken = hashedToken;
+  user.emailVerificationTokenExpires = TokenExpires;
+  
+  await user.save({validateBeforeSave:false});
+
+  const verificationUrl = `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`;
+  
+  try {await sendMail(
+    user.email,
+    "Please verify your Email By resendEmailVerification url",
+    "hola Amigo phirse kr email verify",
+    emailVerificationTemplate(user.username, verificationUrl)
+  )}
+  catch(error){
+    throw new ApiError(500, "Error sending verification email", [error.message], error.stack)
+  }
+
+  return res.status(200).json(new ApiResponse(200, null, "Verification email resent successfully"))
+  
+})
+
+export { signUpUser, verifyEmail, loginUser, logoutUser, getCurrentUser, resendEmailVerification };

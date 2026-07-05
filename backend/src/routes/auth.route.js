@@ -3,6 +3,10 @@ import { verifyEmail } from '../Controllers/auth.controller.js';
 import { loginUser } from '../Controllers/auth.controller.js';
 import { logoutUser } from '../Controllers/auth.controller.js';
 
+import { getCurrentUser } from '../Controllers/auth.controller.js'
+
+import { resendEmailVerification } from '../Controllers/auth.controller.js'
+
 import { Router } from 'express';
 
 const router = Router();
@@ -14,5 +18,9 @@ router.route('/verify-email/:token').get(verifyEmail);
 router.route('/login').post(loginUser);
 
 router.route('/logout').post(logoutUser)
+
+router.route('/currentUser').get(getCurrentUser)
+
+router.route('/resend-email-verification').post(resendEmailVerification)
 
 export default router;
