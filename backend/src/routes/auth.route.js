@@ -7,6 +7,8 @@ import { getCurrentUser } from '../Controllers/auth.controller.js'
 
 import { resendEmailVerification } from '../Controllers/auth.controller.js'
 
+import { refershAccessToken } from '../Controllers/auth.controller.js'
+
 import { Router } from 'express';
 
 import { verifyJwt } from '../middleware/auth.middleware.js';
@@ -18,6 +20,8 @@ router.route('/signup').post(signUpUser);
 router.route('/verify-email/:token').get(verifyEmail);
 
 router.route('/login').post(loginUser);
+
+router.route('/refresh-access-token').post(refershAccessToken);
 
 
 

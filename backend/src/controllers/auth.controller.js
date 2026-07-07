@@ -5,6 +5,7 @@ import { asyncHandler } from '../Utils/async-handler.js';
 import { z } from 'zod';
 import { sendMail, emailVerificationTemplate } from '../Utils/mail.js';
 import crypto from "crypto";
+import jwt from 'jsonwebtoken';
 
 //To check if the user data is valid or not
 const userValidation = z.object({
@@ -268,4 +269,58 @@ const resendEmailVerification = asyncHandler(async(req,res)=>{
   
 })
 
-export { signUpUser, verifyEmail, loginUser, logoutUser, getCurrentUser, resendEmailVerification };
+const refershAccessToken = asyncHandler(async(req, res) => {
+   const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+   console.log("Incoming Refresh Token:", incomingRefreshToken);
+
+
+   if(!incomingRefreshToken){
+    throw new ApiError(404, "Refresh Token not authorized");
+   }
+
+   try{
+
+       const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+      //  console.log("Decoded Token:", decodedToken)
+
+       const user = await User.findById(decodedToken?._id);
+
+       if(!user){
+        throw new ApiError(404, "User not found");
+       }
+
+      //  console.log("user", user)
+       
+      //  console.log("User's stored refresh token:", user.refreshToken);
+
+       if(incomingRefreshToken !== user.refreshToken){
+        throw new ApiError(401, "Invalid Refersh Token");
+       }
+       
+      const options ={
+        httpOnly: true,
+        secure: true
+      }
+
+
+      const {AccessToken, NewRefreshToken} = await generateAccessAndRefreshToken(user._id);
+      
+      user.refreshToken = NewRefreshToken;
+      await user.save({validateBeforeSave:false});
+      
+      return res.status(200)
+      .cookie("accessToken", AccessToken, options)
+      .cookie("refreshToken", NewRefreshToken, options)
+      .json(
+           new ApiResponse(200, null, "Access and Refresh Token Refreshed Successfully")
+      )
+
+   }catch(error){
+    console.error(error);
+    throw error;
+   }
+})
+
+export { signUpUser, verifyEmail, loginUser, logoutUser, getCurrentUser, resendEmailVerification, refershAccessToken };
