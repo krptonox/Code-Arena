@@ -174,7 +174,7 @@ const loginUser = asyncHandler(async(req, res)=>{
 
   console.log("After generation")
 
-  // console.log(AccessToken, RefreshToken)
+  console.log(AccessToken, RefreshToken)
 
   await user.save({validateBeforeSave: false});
   
