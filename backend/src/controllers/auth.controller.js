@@ -15,6 +15,7 @@ const userValidation = z.object({
 
 });
 
+
 const generateAccessAndRefreshToken = async (userId) =>{
   try {
     const user = await User.findById(userId);
@@ -233,6 +234,7 @@ const getCurrentUser = asyncHandler(async(req,res)=>{
   .json(new ApiResponse(200, req.user,"Current user fetched successfully"))
 })
 
+
 const resendEmailVerification = asyncHandler(async(req,res)=>{
    
   const user = await User.findById(req.user._id);
@@ -268,6 +270,7 @@ const resendEmailVerification = asyncHandler(async(req,res)=>{
   return res.status(200).json(new ApiResponse(200, null, "Verification email resent successfully"))
   
 })
+
 
 const refershAccessToken = asyncHandler(async(req, res) => {
    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
@@ -322,5 +325,6 @@ const refershAccessToken = asyncHandler(async(req, res) => {
     throw error;
    }
 })
+
 
 export { signUpUser, verifyEmail, loginUser, logoutUser, getCurrentUser, resendEmailVerification, refershAccessToken };
